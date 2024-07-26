@@ -1,3 +1,5 @@
+import os
+import json
 '''
  * Crea una agenda de contactos por terminal.
  * - Debes implementar funcionalidades de búsqueda, inserción, actualización
@@ -18,7 +20,7 @@ def ElegirOpcion():
 
 
 def buscar():
-    nombre = input("Escriba el nombre del contacto: ").lower()
+    nombre = input("Escriba el nombre del contacto a buscar: ").lower()
     return print(f"El telefono de {nombre} es:  {contactos.get(nombre, 'NO ESTA AGENDADO')}")
 
 
@@ -48,10 +50,21 @@ def actualizar():
 
 def eliminar():
     nombre = input("Escriba el nombre del contacto a eliminar: ").lower()
-    print(contactos.pop(nombre, "CONTACTO NO ENCONTRADO"))
+    eliminado = contactos.pop(nombre, "CONTACTO NO ENCONTRADO")
+    if eliminado.isnumeric():
+        print(f"El contacto {nombre} ha sido eliminado")
+    else:
+        print(eliminado)
 
 
 contactos = {}
+if os.path.isfile("contactos.txt"):
+    with open('contactos.txt') as file:
+        contactos = json.loads(file.read())
+else:
+    with open('contactos.txt', 'w') as file:
+        file.write(json.dumps(contactos))
+
 
 print("AGENDA DE CONTACTOS")
 
@@ -62,13 +75,18 @@ if opcion.isnumeric():
         if opcion == "1":
             buscar()
             print("-------------------------------------------------------------")
+            input("Presiona una tecla para continuar")
         elif opcion == "2":
             agregar()
         elif opcion == "3":
             actualizar()
         elif opcion == "4":
             eliminar()
+            input("Presiona una tecla para continuar")
 
+        os.system('cls')
         opcion = ElegirOpcion()
+    with open('contactos.txt', 'w') as file:
+        file.write(json.dumps(contactos))
 else:
     print("Opcion mal ingresada, Adios!")
